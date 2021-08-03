@@ -1,0 +1,34 @@
+﻿@model IEnumerable<MarsRoversUI.Models.MarsRoverModel>
+
+<table class="table" id="tblMarsRovers">
+    <tr>
+        <th class="col-md-1">@Html.DisplayNameFor(model => model.X)</th>
+        <th class="col-md-1">@Html.DisplayNameFor(model => model.Y)</th>
+        <th class="col-md-1">@Html.DisplayNameFor(model => model.Heading)</th>
+        <th class="col-md-4">@Html.DisplayNameFor(model => model.Instructions)</th>
+        <th class="col-md-5">@Html.DisplayNameFor(model => model.Information)</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr class="rover-info">
+            <td>
+                @Html.DisplayFor(modelItem => item.X)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Y)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Heading)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Instructions)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Information)
+            </td>
+        </tr>
+    }
+
+</table>
+

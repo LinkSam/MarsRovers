@@ -1,0 +1,207 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@model MarsRoversUI.Models.MarsRoversTestModel
+
+<div class="jumbotron">
+    <h1>Mar's Rovers UI</h1>
+    <p class="lead">This page was built with the goal to ease the testing process for "Mar's Rovers" problem through the use of a friendly user interface</p>
+</div>
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @id = "addRoverForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Mar's Rovers Region</h2>
+            <p>Please provide the region data to be used by all Mar's Rovers.</p>
+            <p>All rovers will use the same region details.</p>
+            <br />
+            <div class="form-group">
+                @Html.LabelFor(m => m.RegionWidth, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.RegionWidth, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.RegionHeight, "", new { @class = "error" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.RegionHeight, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.RegionHeight, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.RegionHeight, "", new { @class = "error" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <hr />
+            <h2>Mars Rovers Data</h2>
+            <p>Please provide the data for each Mar's Rovers</p>
+            <p>To add data for a new rover please click on Add</p>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <input id="btnAddRover" type="button" class="btn btn-default" style="float:right" value="Add Rover's Info" />
+                </div>
+            </div>
+            <div id="marsroverslist">
+                @Html.Partial("_MarsRoversList", Model.MarsRoverList)
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <hr />
+            <h2>Test Mar's Rovers</h2>
+            <p>To test the case, just click on "Test" button.</p>
+            <p>For a new case, click on "Clear" button.</p>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <input id="btnTest" type="button" class="btn btn-default btn-primary" style="float:right" value="Test" />
+                </div>
+                <div class="col-md-6">
+                    @Html.ActionLink("Clear", "Index", "Home", new { @class = "btn btn-default", @style = "float:left" })
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id='modalWindow' class='modal'>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div id='modalContent'>
+
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Mar's Rover Info</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @Html.Partial("_RoverInfo", new MarsRoversUI.Models.MarsRoverModel())
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="btnAddMarsRover" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+}
+
+@section scripts
+{
+    <script>
+        $(function () {
+            $("#btnAddRover").click(function () {
+                var options = { "backdrop": "static", keyboard: true };
+                $('#modalWindow').modal(options);
+                $('#modalWindow').modal('show');
+                $.validator.unobtrusive.parse("#addRoverForm");
+            });
+
+            $("#btnAddMarsRover").click(function () {
+                $("#addRoverForm").validate();
+                if ($("#addRoverForm").valid()) {
+
+                    var txtXValue = $("#X");
+                    var txtYValue = $("#Y");
+                    var txtHeading = $("#Heading");
+                    var txtInstructions = $("#Instructions");
+
+                    //Get the reference of the Table's TBODY element.
+                    var tBody = $("#tblMarsRovers");
+
+                    //Add Row.
+                    var row = $("<tr>");
+                    row.addClass("rover-info")
+
+                    //Add X Value cell.
+                    var cell = $("<td>");
+                    cell.html(txtXValue.val());
+                    row.append(cell);
+
+                    //Add Y Value cell.
+                    cell = $("<td>");
+                    cell.html(txtYValue.val());
+                    row.append(cell);
+
+                    //Add Heading cell
+                    cell = $("<td>");
+                    cell.html(txtHeading.val());
+                    row.append(cell);
+
+                    //Add Instructions cell
+                    cell = $("<td>");
+                    cell.html(txtInstructions.val());
+                    row.append(cell);
+
+                    //Add Information cell (empty)
+                    cell = $("<td>");
+                    cell.html("");
+                    row.append(cell);
+
+                    //Add the row to the table
+                    tBody.append(row);
+
+                    //Clear the TextBoxes.
+                    txtXValue.val("");
+                    txtYValue.val("");
+                    txtHeading.val("");
+                    txtInstructions.val("");
+
+                }
+            });
+
+            $('#modal-container').change(
+                function () {
+                    $.validator.unobtrusive.parse("#your-form-id");
+                });
+
+            $("#btnTest").click(function () {
+                $("#addRoverForm").validate();
+                if ($("#addRoverForm").valid()) {
+
+                    //Loop through the Table rows and build a JSON array.
+                    var testModel = {};
+                    testModel.RegionWidth = $("#RegionWidth").val();
+                    testModel.RegionHeight = $("#RegionHeight").val();
+
+                    var marsRovers = new Array();
+                    $("#tblMarsRovers .rover-info").each(function () {
+                        var row = $(this);
+                        var marsRover = {};
+                        marsRover.X = row.find("TD").eq(0).html();
+                        marsRover.Y = row.find("TD").eq(1).html();
+                        marsRover.Heading = row.find("TD").eq(2).html();
+                        marsRover.Instructions = row.find("TD").eq(3).html();
+                        marsRovers.push(marsRover);
+                    });
+
+                    testModel.MarsRoverList = marsRovers;
+                    //Send the JSON array to Controller using AJAX.
+                    $.ajax({
+                        type: "POST",
+                        url: "/Home/Test",
+                        data: JSON.stringify(testModel),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "html",
+                        success: function (result) {
+                            $("#marsroverslist").html(result);
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+
+}
