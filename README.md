@@ -35,8 +35,8 @@ This UI was built using MVC, JQuery and a little of bootstrap</br>
 		
 Package Restore
 		
-Due to the fact that all exe and dll files were removed it is necessary to execute the following command to restore the missing packages
+Due to the fact that all exe and dll files were removed it is necessary to execute the following command to force the restoration of all the missing nuget packages
 			
-	update-package Microsoft.CodeDom.Providers.DotNetCompilerPlatform
+	Update-Package -Reinstall
 			
 to do so, open the Nuget Packages Manager CLI at Tools menu
